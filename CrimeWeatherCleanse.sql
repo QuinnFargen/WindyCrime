@@ -4,16 +4,15 @@
 
 	SELECT * FROM Messy.Wind.Weather A with (NOLOCK)
 
+	
+	SELECT TOP 5000 * FROM Messy.Wind.Crime A with (NOLOCK)
+	   	  
 
 
-
-
-
-
-
-
-
-
+	SELECT COUNT(*), MIN(A.CrimeDt), MAX(A.CrimeDt)
+	FROM Messy.Wind.Crime A with (NOLOCK)
+	JOIN Messy.Wind.Weather B with (NOLOCK) ON CAST(A.CrimeDt AS DATE) = B.WDate
+	-- 7252438
 
 
 
@@ -22,7 +21,8 @@
 --	DROP TABLE Messy.Wind.CrimesOrig2
 
 SELECT TOP 50 *
-FROM Messy.Wind.CrimesOrig A with (NOLOCK)
+	
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 -- 7,252,896
 -- 2001 - 2020
 
@@ -36,6 +36,7 @@ SELECT
 	COUNT(*)							-- 7,252,896
 	,COUNT(DISTINCT A.ID)				-- 7,252,896
 	,COUNT(DISTINCT A.[Case Number])	-- 7,252,438
+	,COUNT(DISTINCT A.Block)						-- 402
 	,COUNT(DISTINCT A.IUCR)						-- 402
 	,COUNT(DISTINCT A.[Primary Type])			-- 36
 	,COUNT(DISTINCT A.Description)				-- 525	534
@@ -51,18 +52,13 @@ FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 
 
 SELECT COUNT(*), A.Arrest
-FROM Messy.Wind.CrimesOrig A with (NOLOCK)
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 GROUP BY A.Arrest
 ORDER BY COUNT(*) DESC
 
-SELECT TOP 500 *
-FROM Messy.Wind.CrimesOrig A with (NOLOCK)
-WHERE A.Arrest = ' PUBLIC'
-
-
-SELECT COUNT(*), A.Arrest
+SELECT COUNT(*), A.[Primary Type]
 FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
-GROUP BY A.Arrest
+GROUP BY A.[Primary Type]
 ORDER BY COUNT(*) DESC
 
 SELECT COUNT(*), A.[Community Area]
@@ -74,23 +70,210 @@ SELECT TOP 500 *
 FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 WHERE A.Arrest = ' PUBLIC'
 
-
-SELECT TOP 50 *
-FROM Messy.Wind.CrimesOrig A with (NOLOCK)
-WHERE A.Latitude = ''
-
-
 SELECT TOP 500 
 	A.[Case Number], COUNT(*)
 FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 GROUP BY A.[Case Number]
 HAVING COUNT(*) > 1
 
+SELECT TOP 500 
+	A.[Case Number], A.[Updated On], A.ID, COUNT(*)
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.[Case Number], A.[Updated On], A.ID
+HAVING COUNT(*) > 1
+
+
+SELECT COUNT(*), SUM(CASE WHEN A.Arrest = 'true' THEN 1 ELSE 0 END), SUM(CASE WHEN A.Arrest = 'true' THEN 1 ELSE 0 END) * 1.0 / COUNT(*), YEAR(CAST(A.Date AS datetime))
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY YEAR(CAST(A.Date AS datetime))
+ORDER BY YEAR(CAST(A.Date AS datetime)) DESC
+
+
+SELECT COUNT(*), A.Arrest, AVG(DATEDIFF(DAY, CAST(A.Date AS datetime), CAST(A.[Updated On] AS datetime)) * 1.0)
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.Arrest
+ORDER BY COUNT(*) DESC
+
+SELECT 
+	MAX(CAST(A.Date AS datetime))
+	,MIN(CAST(A.Date AS datetime))
+	,MAX(CAST(A.[Updated On] AS datetime))
+	,MIN(CAST(A.[Updated On] AS datetime))
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 
 SELECT TOP 500 *
 FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
 WHERE A.[Case Number] = 'HW486725'
 --HY346207
+
+SELECT COUNT(*), YEAR(CAST(A.Date AS datetime))
+	,COUNT(DISTINCT A.Beat)
+	,COUNT(DISTINCT A.District)
+	,COUNT(DISTINCT A.Ward)
+	,COUNT(DISTINCT A.[Community Area])
+	,SUM(CASE WHEN A.Ward = '' THEN 1 ELSE 0 END)
+	,SUM(CASE WHEN A.[Community Area] = '' THEN 1 ELSE 0 END)
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY YEAR(CAST(A.Date AS datetime))
+ORDER BY YEAR(CAST(A.Date AS datetime)) DESC
+
+SELECT TOP 500 *
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+WHERE A.[Community Area] = ''
+
+SELECT COUNT(*), A.IUCR
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.IUCR
+ORDER BY COUNT(*) DESC
+
+SELECT COUNT(*), A.Beat
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.Beat
+ORDER BY COUNT(*) DESC
+
+SELECT COUNT(*), A.District
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.District
+ORDER BY COUNT(*) DESC
+
+SELECT COUNT(*), A.Ward
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.Ward
+ORDER BY COUNT(*) DESC
+
+SELECT COUNT(*), A.[Community Area]
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.[Community Area]
+ORDER BY COUNT(*) DESC
+
+SELECT COUNT(*), A.[FBI Code]
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.[FBI Code]
+ORDER BY COUNT(*) DESC
+
+
+SELECT COUNT(*), A.Longitude
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.Longitude
+ORDER BY COUNT(*) DESC
+-- 873K, 70K Blank
+
+SELECT COUNT(*), A.Latitude
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.Latitude
+ORDER BY COUNT(*) DESC
+-- 874K, 70K Blank
+
+SELECT COUNT(*), A.[X Coordinate]
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.[X Coordinate]
+ORDER BY COUNT(*) DESC
+-- 78K, 70K Blank
+
+SELECT COUNT(*), A.[Y Coordinate]
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+GROUP BY A.[Y Coordinate]
+ORDER BY COUNT(*) DESC
+-- 129K, 70K Blank
+
+
+
+
+
+
+----------------------------------------------
+
+
+CREATE TABLE [Wind].[PrimaryType]
+(
+	[PrimTypeID] [int] IDENTITY(1,1) PRIMARY KEY,
+	[PrimaryType] [varchar](500) NULL
+)
+
+INSERT INTO Messy.Wind.PrimaryType (PrimaryType)
+	SELECT A.[Primary Type]
+	FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+	GROUP BY A.[Primary Type]
+	ORDER BY COUNT(*) DESC
+	-- 36
+	SELECT * FROM Messy.Wind.PrimaryType A with (NOLOCK)
+
+	
+CREATE TABLE [Wind].[Description]
+(
+	[DescID] [int] IDENTITY(1,1) PRIMARY KEY,
+	[Description] [varchar](500) NULL
+)
+
+INSERT INTO Messy.Wind.[Description] ([Description])
+	SELECT A.Description
+	FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+	GROUP BY A.Description
+	ORDER BY COUNT(*) DESC
+	-- 534
+	SELECT * FROM Messy.Wind.[Description] A with (NOLOCK)
+	
+CREATE TABLE [Wind].[LocDesc]
+(
+	[LocDescID] [int] IDENTITY(1,1) PRIMARY KEY,
+	[LocDesc] [varchar](500) NULL
+)
+
+INSERT INTO Messy.Wind.[LocDesc] ([LocDesc])
+	SELECT A.[Location Description]
+	FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+	GROUP BY A.[Location Description]
+	ORDER BY COUNT(*) DESC
+	-- 534
+	SELECT * FROM Messy.Wind.[LocDesc] A with (NOLOCK)
+
+
+
+	
+SELECT TOP 50 *	
+FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+
+
+
+
+
+	SELECT --TOP 50 
+		A.ID
+		,[CaseNo]	= A.[Case Number]
+		,[CrimeDt]	= CAST(A.Date AS datetime)
+		,[UpdateDt] = CAST(A.[Updated On] AS datetime)
+		,A.Block
+		,C.PrimTypeID
+		,D.DescID
+		,E.LocDescID
+		,[Arrest] = CASE WHEN A.Arrest = 'true' THEN 1 ELSE 0 END
+		,[Domestic] = CASE WHEN A.Domestic = 'true' THEN 1 ELSE 0 END
+		,[IUCR] = CASE WHEN A.IUCR = '' THEN NULL ELSE A.IUCR END
+		,[Beat] = CASE WHEN A.Beat = '' THEN NULL ELSE A.Beat END
+		,[District] = CASE WHEN A.District = '' THEN NULL ELSE A.District END
+		,[Ward] = CASE WHEN A.Ward = '' THEN NULL ELSE A.Ward END
+		,[CommArea] = CASE WHEN A.[Community Area] = '' THEN NULL ELSE A.[Community Area] END
+		,[FBICode] = CASE WHEN A.[FBI Code] = '' THEN NULL ELSE A.[FBI Code] END
+		--,A.
+	INTO Messy.Wind.Crime
+	-- SELECT COUNT(*)
+	FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+	JOIN (	-- Get Recent ID
+			SELECT A.[Case Number], [ID] = MAX(A.ID)
+			FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+			JOIN (	-- Get Recent Update Date
+					SELECT A.[Case Number], [Updated On] = MAX(a.[Updated On])
+					FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
+					GROUP BY A.[Case Number]
+				) B ON A.[Case Number] = B.[Case Number] AND A.[Updated On] = b.[Updated On]
+			GROUP BY A.[Case Number]
+		) B ON A.[Case Number] = B.[Case Number] AND A.ID = B.ID
+	LEFT JOIN Messy.Wind.PrimaryType C with (NOLOCK) ON A.[Primary Type] = C.PrimaryType
+	LEFT JOIN Messy.Wind.Description D with (NOLOCK) ON A.Description = D.Description
+	LEFT JOIN Messy.Wind.LocDesc E with (NOLOCK) ON A.[Location Description] = E.LocDesc
+	-- 7,252,896
+	-- 7,252,438 -- Uniq CaseNo
+	-- TIME: 1.08
 
 
 
@@ -450,6 +633,15 @@ WHERE YEAR(A.Calendar_Date) BETWEEN 2001 AND 2020
 	AND B.WID IS NULL
 -- 7305
 
+
+	SELECT *
+	FROM Messy.Wind.WeathAll A with (NOLOCK)
+	WHERE A.STATION = 'USW00094846'
+	
+	SELECT *
+	FROM Messy.Wind.Weath04_05 A with (NOLOCK)
+	WHERE A.STATION = 'USW00094846'
+	-- CHICAGO OHARE INTERNATIONAL AIRPORT, IL US
 
 
 
