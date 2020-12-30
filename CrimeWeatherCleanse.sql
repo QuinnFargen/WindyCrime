@@ -206,9 +206,9 @@ CREATE TABLE [Wind].[Description]
 )
 
 INSERT INTO Messy.Wind.[Description] ([Description])
-	SELECT A.Description
+	SELECT REPLACE(A.Description,',','')
 	FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
-	GROUP BY A.Description
+	GROUP BY REPLACE(A.Description,',','')
 	ORDER BY COUNT(*) DESC
 	-- 534
 	SELECT * FROM Messy.Wind.[Description] A with (NOLOCK)
@@ -220,9 +220,9 @@ CREATE TABLE [Wind].[LocDesc]
 )
 
 INSERT INTO Messy.Wind.[LocDesc] ([LocDesc])
-	SELECT A.[Location Description]
+	SELECT REPLACE(A.[Location Description],',','')
 	FROM Messy.Wind.CrimesOrig2 A with (NOLOCK)
-	GROUP BY A.[Location Description]
+	GROUP BY REPLACE(A.[Location Description],',','')
 	ORDER BY COUNT(*) DESC
 	-- 534
 	SELECT * FROM Messy.Wind.[LocDesc] A with (NOLOCK)
